@@ -7,11 +7,10 @@
 
     2.c terraform apply
 
-    3.d put your host machines public key in to authorized folder.
-
 3. Inside ansible_setup folder run:
 
 ansible-playbook playbook.yml -l server1 -u root
 
 4. In browser type public ip addres of newly created EC2 instance.
 5. Follow guided WordPress setup
+6. Well done, you have your wordpress website
