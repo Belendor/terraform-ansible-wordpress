@@ -10,6 +10,12 @@ variable "vpc_cidr_block" {
   default     = "10.0.0.0/16"
 }
 
+variable "pub" {
+  description = "Host machine public key"
+  type        = string
+  default     = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDC/znCpNGH+Rp7H+9CHIoBgpicwdIGs0d94/RoxN012fJkKZhywOWqhWt0+zaWmSlBGSiA4NL+ZHQXmIZPSGW+d/2ck3KGtk4d/zodMyabVX46kErEjHDXoGFjPlKaFucYKLt0jZYnKCYzWMNeB3kgfwIo/iqGjOw8MDg7JkbC3ihQviVaqfRreW5PVx+aGz8D6yYjoQl/vGXtYMOLIyviaGt7libkbLAyU/nDYeCDd6uiojndpr2IgqlPt1EzQfljGf6rd6a/zJCpSHQLVQH9v4+lFRdqfBuew5Skv0skQ8BTqKnvPilgVxDlst/KoLzvCweeLNEWdRqMDHyfE11/bvWLhOl6FrvPbv63rKwGXIm3AnvKmo6vfzt+3AByQWDTUnOVdiFuH2JK7kIpOVl+8CDD4YjNQ9UuXHJEk2/QHZYTvEV7+m5XQoj2NK329AkByhDyZwdwTQaCITtM13bkgWLLGuP+rXFZa3B293GAUVnjXaAAvFoxKgcb2cfWFoE= belendor@UbuntuPC"
+}
+
 variable "ec2_count" {
   description = "Number of EC2 instances"
   type        = number

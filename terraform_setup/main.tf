@@ -48,14 +48,20 @@ resource "aws_security_group" "my-sg" {
   }
 }
 
-data "aws_ami" "amazon_linux" {
-  most_recent = true
-  owners      = ["amazon"]
+data "aws_ami" "ubuntu" {
 
+  most_recent = true
   filter {
     name   = "name"
-    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
   }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["099720109477"]
 }
 
 resource "tls_private_key" "example" {
@@ -71,18 +77,17 @@ resource "aws_key_pair" "generated_key" {
 resource "aws_instance" "host" {
   count = var.ec2_count
 
-  ami                    = data.aws_ami.amazon_linux.id
+  ami                    = data.aws_ami.ubuntu.id
   instance_type          = "t2.micro"
   key_name               = aws_key_pair.generated_key.key_name
   subnet_id              = module.vpc.public_subnets[count.index % length(module.vpc.public_subnets)]
   vpc_security_group_ids = [aws_security_group.my-sg.id]
-  user_data              = <<-EOF
-              #!/bin/bash
-              echo "Hello, World $(hostname -f)" > index.html
-              python3 -m http.server 80 &
-              EOF
+  user_data = templatefile("${path.module}/init-script.sh", {
+    file_content = "Blue - #${count.index}",
+    content = "${var.pub}"
+  })
 
   tags = {
-    Name = "Ansible-hostt"
+    Name = "Ansible-host"
   }
 }
