@@ -42,11 +42,22 @@ data "aws_ami" "amazon_linux" {
   }
 }
 
+resource "tls_private_key" "example" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "aws_key_pair" "generated_key" {
+  key_name   = "default_key"
+  public_key = tls_private_key.example.public_key_openssh
+}
+
 resource "aws_instance" "host" {
   count = var.ec2_count
 
   ami                    = data.aws_ami.amazon_linux.id
   instance_type          = "t2.micro"
+  key_name               = aws_key_pair.generated_key.key_name
   subnet_id              = module.vpc.public_subnets[count.index % length(module.vpc.public_subnets)]
   vpc_security_group_ids = [module.app_security_group.this_security_group_id]
   user_data              = <<-EOF
