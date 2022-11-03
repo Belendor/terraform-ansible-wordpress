@@ -16,6 +16,26 @@ variable "ec2_count" {
   default     = 1
 }
 
+variable "rules" {
+  type = list(object({
+    port        = number
+    proto       = string
+    cidr_blocks = list(string)
+  }))
+
+  default = [
+    {
+      port        = 80
+      proto       = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    },
+    {
+      port        = 22
+      proto       = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  ]
+}
 # variable "enable_vpn_gateway" {
 #   description = "Enable a VPN gateway in your VPC."
 #   type        = bool

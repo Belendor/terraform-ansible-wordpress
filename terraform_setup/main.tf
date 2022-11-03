@@ -21,15 +21,31 @@ module "vpc" {
   enable_vpn_gateway = false
 }
 
-module "app_security_group" {
-  source  = "terraform-aws-modules/security-group/aws//modules/web"
-  version = "3.17.0"
+resource "aws_security_group" "my-sg" {
+  vpc_id = module.vpc.vpc_id
+  name   = join("_", ["sg", module.vpc.vpc_id])
 
-  name        = "web-sg"
-  description = "Security group for web-servers with HTTP ports open within VPC"
-  vpc_id      = module.vpc.vpc_id
+  dynamic "ingress" {
+    for_each = var.rules
 
-  ingress_cidr_blocks = ["0.0.0.0/0"]
+    content {
+      from_port   = ingress.value["port"]
+      to_port     = ingress.value["port"]
+      protocol    = ingress.value["proto"]
+      cidr_blocks = ingress.value["cidr_blocks"]
+    }
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "SG_Rules"
+  }
 }
 
 data "aws_ami" "amazon_linux" {
@@ -59,7 +75,7 @@ resource "aws_instance" "host" {
   instance_type          = "t2.micro"
   key_name               = aws_key_pair.generated_key.key_name
   subnet_id              = module.vpc.public_subnets[count.index % length(module.vpc.public_subnets)]
-  vpc_security_group_ids = [module.app_security_group.this_security_group_id]
+  vpc_security_group_ids = [aws_security_group.my-sg.id]
   user_data              = <<-EOF
               #!/bin/bash
               echo "Hello, World $(hostname -f)" > index.html
