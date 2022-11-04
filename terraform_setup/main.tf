@@ -1,10 +1,10 @@
+
 provider "aws" {
   region = var.region
 }
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "2.64.0"
 
   name = "main-vpc"
   cidr = var.vpc_cidr_block
