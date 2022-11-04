@@ -40,7 +40,7 @@
 
 7. Inside control node as root user clone this repo. Navigate to ansible_setup folder and run:
 
-    ```ansible-playbook playbook.yml -l server1 -u root```
+    ```sudo ansible-playbook playbook.yml -l server1 -u root```
 
 4. In browser go to your hosts public IP that you can find in terraform outputs.
 5. Follow guided WordPress setup
