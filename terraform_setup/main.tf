@@ -2,10 +2,6 @@ provider "aws" {
   region = var.region
 }
 
-data "aws_availability_zones" "available" {
-  state = "available"
-}
-
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "2.64.0"
@@ -45,49 +41,5 @@ resource "aws_security_group" "my-sg" {
 
   tags = {
     Name = "SG_Rules"
-  }
-}
-
-data "aws_ami" "ubuntu" {
-
-  most_recent = true
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  owners = ["099720109477"]
-}
-
-resource "tls_private_key" "example" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
-
-resource "aws_key_pair" "generated_key" {
-  key_name   = "default_key"
-  public_key = tls_private_key.example.public_key_openssh
-}
-
-resource "aws_instance" "host" {
-  count = var.ec2_count
-
-  ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t2.micro"
-  key_name               = aws_key_pair.generated_key.key_name
-  subnet_id              = module.vpc.public_subnets[count.index % length(module.vpc.public_subnets)]
-  vpc_security_group_ids = [aws_security_group.my-sg.id]
-  user_data = templatefile("${path.module}/init-script.sh", {
-    file_content = "Blue - #${count.index}",
-    content = "${var.pub}"
-  })
-
-  tags = {
-    Name = "Ansible-host"
   }
 }

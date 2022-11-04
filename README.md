@@ -1,4 +1,4 @@
-1. Set up your host machine with Ansible on it.
+1. Set up your control machine with Ansible on it.
 2. Launch ec2 instance at aws using terraform_setup folder.
 
     2.a open terraform_setup folder.
